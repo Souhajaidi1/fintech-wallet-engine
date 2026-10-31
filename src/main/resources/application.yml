@@ -1,0 +1,76 @@
+spring:
+  application:
+    name: fintech-wallet-engine
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/wallet}
+    username: ${DB_USER:wallet}
+    password: ${DB_PASSWORD:wallet}
+    hikari:
+      maximum-pool-size: 10
+      # Money movement takes row locks. A short timeout turns a pathological
+      # lock wait into a fast 500 the client can retry, instead of a request
+      # that occupies a connection until the pool is exhausted.
+      connection-timeout: 5000
+
+  jpa:
+    # Flyway owns the schema. Hibernate is never allowed to alter it: a stray
+    # entity change must fail validation rather than silently migrate production.
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+          batch_size: 20
+        order_inserts: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+
+  threads:
+    virtual:
+      enabled: true
+
+wallet:
+  jwt:
+    # No default. The application refuses to start without an explicit secret
+    # rather than shipping one that is identical in every checkout.
+    secret: ${JWT_SECRET}
+    ttl: ${JWT_TTL:PT30M}
+    issuer: fintech-wallet-engine
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      # Details are for operators, not for anonymous callers: a public health
+      # endpoint that names the database and its version is reconnaissance.
+      show-details: when-authorized
+      roles: ADMIN
+  metrics:
+    tags:
+      application: fintech-wallet-engine
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
+server:
+  error:
+    # Stack traces and internal messages never reach the client. The global
+    # exception handler decides what is safe to return.
+    include-stacktrace: never
+    include-message: never
+
+logging:
+  level:
+    root: INFO
+    com.souhajaidi.wallet: INFO
