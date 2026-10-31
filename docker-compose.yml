@@ -1,0 +1,35 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: wallet
+      POSTGRES_USER: wallet
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-wallet}
+    volumes:
+      - wallet-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U wallet -d wallet"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build: .
+    depends_on:
+      db:
+        # The API waits for a database that is genuinely accepting connections,
+        # not merely for a container that has started.
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/wallet
+      DB_USER: wallet
+      DB_PASSWORD: ${DB_PASSWORD:-wallet}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env before starting}
+      JWT_TTL: PT30M
+    ports:
+      - "8080:8080"
+
+volumes:
+  wallet-data:
