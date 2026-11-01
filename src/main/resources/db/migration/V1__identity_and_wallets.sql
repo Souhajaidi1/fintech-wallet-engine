@@ -20,7 +20,7 @@ CREATE TABLE wallet (
     id             UUID        PRIMARY KEY,
     owner_id       UUID        NOT NULL,
     label          VARCHAR(60) NOT NULL,
-    currency       CHAR(3)     NOT NULL,
+    currency       VARCHAR(3)  NOT NULL,
     balance_minor  BIGINT      NOT NULL DEFAULT 0,
     status         VARCHAR(16) NOT NULL DEFAULT 'ACTIVE',
     version        BIGINT      NOT NULL DEFAULT 0,

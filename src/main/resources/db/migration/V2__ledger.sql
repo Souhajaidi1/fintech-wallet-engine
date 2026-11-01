@@ -10,7 +10,7 @@ CREATE TABLE ledger_account (
     id           UUID        PRIMARY KEY,
     account_type VARCHAR(24) NOT NULL,
     wallet_id    UUID,
-    currency     CHAR(3)     NOT NULL,
+    currency     VARCHAR(3)  NOT NULL,
     created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
     CONSTRAINT fk_ledger_account_wallet FOREIGN KEY (wallet_id) REFERENCES wallet (id),
     CONSTRAINT ck_ledger_account_type
@@ -30,7 +30,7 @@ CREATE TABLE journal_entry (
     id               UUID        PRIMARY KEY,
     entry_type       VARCHAR(16) NOT NULL,
     status           VARCHAR(16) NOT NULL,
-    currency         CHAR(3)     NOT NULL,
+    currency         VARCHAR(3)  NOT NULL,
     amount_minor     BIGINT      NOT NULL,
     initiated_by     UUID        NOT NULL,
     reference        VARCHAR(140),

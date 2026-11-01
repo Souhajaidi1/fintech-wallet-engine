@@ -7,7 +7,7 @@ CREATE TABLE idempotency_key (
     key_value         VARCHAR(120) NOT NULL,
     user_id           UUID         NOT NULL,
     endpoint          VARCHAR(80)  NOT NULL,
-    request_hash      CHAR(64)     NOT NULL,
+    request_hash      VARCHAR(64)  NOT NULL,
     status            VARCHAR(16)  NOT NULL,
     response_status   INT,
     response_body     TEXT,
